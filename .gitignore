@@ -1,0 +1,43 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+coverage
+
+# build outputs
+.nuxt/
+.output/
+out/
+build
+dist
+dist.*
+
+# misc
+.idea
+.DS_Store
+*.pem
+.eslintrc-auto-import.json
+auto-imports.d.ts
+components.d.ts
+.eslintcache
+
+# debug
+*.log
+
+# local env files
+*.local
+
+# turbo
+.turbo
+
+# vercel
+.vercel
+
+
+# storybook
+*storybook.log
+storybook-static
