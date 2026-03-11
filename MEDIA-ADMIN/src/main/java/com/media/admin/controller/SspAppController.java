@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/media/app")
-@CrossOrigin(origins = "*")
 public class SspAppController {
 
     @Autowired
@@ -27,8 +25,8 @@ public class SspAppController {
     /**
      * 分页查询应用列表
      */
-    @GetMapping("/page")
-    public Result<Map<String, Object>> getPage(AppPageRequest request) {
+    @GetMapping("/list")
+    public Result<Map<String, Object>> getList(AppPageRequest request) {
         log.info("分页查询应用列表: mediaId={}", request.getMediaId());
         return sspAppService.getPage(request);
     }

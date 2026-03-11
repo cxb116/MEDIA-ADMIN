@@ -132,4 +132,175 @@ declare namespace Api {
         Api.Common.CommonSearchParams
     >
   }
+
+  /** 媒体管理类型 */
+  namespace MediaManage {
+    // ==================== 应用管理 ====================
+
+    /** 应用列表 */
+    type AppList = Api.Common.PaginatedResponse<AppListItem>
+
+    /** 应用列表项 */
+    interface AppListItem {
+      id: number
+      mediaId: number
+      name: string
+      osType: number
+      osTypeName: string
+      accessType: number
+      accessTypeName: string
+      pkg: string
+      downloadUrl: string
+      enable: number
+      enableName: string
+      createTime: string
+      updateTime: string
+      remark: string
+    }
+
+    /** 应用搜索参数 */
+    type AppSearchParams = Partial<
+      Pick<AppListItem, 'mediaId' | 'name' | 'osType' | 'enable'> &
+        Api.Common.CommonSearchParams
+    >
+
+    /** 应用创建参数 */
+    interface AppCreateParams {
+      mediaId: number
+      name: string
+      osType: number
+      accessType?: number
+      pkg?: string
+      downloadUrl?: string
+      remark?: string
+    }
+
+    /** 应用更新参数 */
+    interface AppUpdateParams {
+      id: number
+      name?: string
+      osType?: number
+      accessType?: number
+      pkg?: string
+      downloadUrl?: string
+      enable?: number
+      remark?: string
+    }
+
+    // ==================== 广告位管理 ====================
+
+    /** 广告位列表 */
+    type SlotList = Api.Common.PaginatedResponse<SlotListItem>
+
+    /** 广告位列表项 */
+    interface SlotListItem {
+      id: number
+      mediaId: number
+      appId: number
+      name: string
+      nameAlise: string
+      adSceneId: number
+      adTypeId: number
+      adSizeId: number
+      sspPayType: number
+      sspPayTypeName: string
+      sspDealRatio: number
+      width: number
+      height: number
+      adImage: string
+      interactionType: number
+      interactionTypeName: string
+      enable: number
+      enableName: string
+      createTime: string
+      updateTime: string
+      remark: string
+    }
+
+    /** 广告位搜索参数 */
+    type SlotSearchParams = Partial<
+      Pick<SlotListItem, 'mediaId' | 'appId' | 'name' | 'enable'> &
+        Api.Common.CommonSearchParams
+    >
+
+    /** 广告位创建参数 */
+    interface SlotCreateParams {
+      mediaId: number
+      appId: number
+      name: string
+      nameAlise?: string
+      adSceneId?: number
+      adTypeId?: number
+      adSizeId?: number
+      sspPayType?: number
+      sspDealRatio?: number
+      width?: number
+      height?: number
+      adImage?: string
+      interactionType?: number
+      remark?: string
+    }
+
+    /** 广告位更新参数 */
+    interface SlotUpdateParams {
+      id: number
+      name?: string
+      nameAlise?: string
+      adSceneId?: number
+      adTypeId?: number
+      adSizeId?: number
+      sspPayType?: number
+      sspDealRatio?: number
+      width?: number
+      height?: number
+      adImage?: string
+      interactionType?: number
+      enable?: number
+      remark?: string
+    }
+
+    // ==================== 数据查询 ====================
+
+    /** 数据列表 */
+    type DataList = Api.Common.PaginatedResponse<DataListItem>
+
+    /** 数据列表项 */
+    interface DataListItem {
+      id: number
+      mediaId: number
+      appId: number
+      sspSlotId: number
+      dspSlotId: number
+      dspSlotCode: string
+      showPv: number
+      showUv: number
+      clickPv: number
+      clickUv: number
+      reqPv: number
+      reqUv: number
+      discard: number
+      retPv: number
+      retUv: number
+      spend: number
+      income: number
+      discountClickPv: number
+      discountShowPv: number
+      dplsuccPv: number
+      completePv: number
+      installPv: number
+      activatePv: number
+      date: number
+      dateStr: string
+    }
+
+    /** 数据搜索参数 */
+    interface DataSearchParams extends Api.Common.CommonSearchParams {
+      mediaId?: number
+      appId?: number
+      sspSlotId?: number
+      startDate?: number
+      endDate?: number
+      month?: string
+    }
+  }
 }
