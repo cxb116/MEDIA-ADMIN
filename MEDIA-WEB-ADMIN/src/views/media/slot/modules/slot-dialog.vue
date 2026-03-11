@@ -20,23 +20,23 @@
       </ElRow>
       <ElRow :gutter="20">
         <ElCol :span="12">
+          <ElFormItem label="广告类型" prop="adTypeId">
+            <ElSelect v-model="formData.adTypeId" placeholder="请选择广告类型">
+              <ElOption label="Banner" :value="1" />
+              <ElOption label="插屏" :value="2" />
+              <ElOption label="开屏" :value="3" />
+              <ElOption label="信息流" :value="4" />
+              <ElOption label="激励视频" :value="5" />
+              <ElOption label="原生" :value="6" />
+            </ElSelect>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :span="12">
           <ElFormItem label="结算方式" prop="sspPayType">
             <ElSelect v-model="formData.sspPayType" placeholder="请选择结算方式">
               <ElOption label="分成" :value="1" />
               <ElOption label="RTB" :value="2" />
             </ElSelect>
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12">
-          <ElFormItem label="分成比例" prop="sspDealRatio">
-            <ElInputNumber
-              v-model="formData.sspDealRatio"
-              :min="0"
-              :max="1"
-              :step="0.1"
-              :precision="2"
-              style="width: 100%"
-            />
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -107,6 +107,7 @@
     id: undefined as number | undefined,
     name: '',
     nameAlise: '',
+    adTypeId: undefined as number | undefined,
     sspPayType: 1,
     sspDealRatio: 0.5,
     width: 0,
@@ -136,6 +137,7 @@
       id: isEdit && row ? row.id : undefined,
       name: isEdit && row ? row.name || '' : '',
       nameAlise: isEdit && row ? row.nameAlise || '' : '',
+      adTypeId: isEdit && row ? row.adTypeId || undefined : undefined,
       sspPayType: isEdit && row ? row.sspPayType || 1 : 1,
       sspDealRatio: isEdit && row ? row.sspDealRatio || 0.5 : 0.5,
       width: isEdit && row ? row.width || 0 : 0,
@@ -182,6 +184,7 @@
               appId: 1,
               name: formData.name,
               nameAlise: formData.nameAlise,
+              adTypeId: formData.adTypeId,
               sspPayType: formData.sspPayType,
               sspDealRatio: formData.sspDealRatio,
               width: formData.width,
@@ -195,6 +198,7 @@
               id: formData.id!,
               name: formData.name,
               nameAlise: formData.nameAlise,
+              adTypeId: formData.adTypeId,
               sspPayType: formData.sspPayType,
               sspDealRatio: formData.sspDealRatio,
               width: formData.width,
