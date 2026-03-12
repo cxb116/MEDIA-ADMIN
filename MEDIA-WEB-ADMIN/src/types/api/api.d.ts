@@ -135,7 +135,7 @@ declare namespace Api {
 
   /** 媒体管理类型 */
   namespace MediaManage {
-    // ==================== 应用管理 ====================
+    // 应用、广告位、数据查询类型定义...
 
     /** 应用列表 */
     type AppList = Api.Common.PaginatedResponse<AppListItem>
@@ -166,7 +166,7 @@ declare namespace Api {
 
     /** 应用创建参数 */
     interface AppCreateParams {
-      mediaId: number
+      mediaId?: number  // 后端自动从 Token 获取，无需传递
       name: string
       osType: number
       accessType?: number
@@ -197,14 +197,16 @@ declare namespace Api {
       id: number
       mediaId: number
       appId: number
+      appName: string
+      appOsType: number
+      appOsTypeName: string
       name: string
-      nameAlise: string
       adSceneId: number
+      adSceneName: string
       adTypeId: number
+      adTypeName: string
       adSizeId: number
-      sspPayType: number
-      sspPayTypeName: string
-      sspDealRatio: number
+      adSizeName: string
       width: number
       height: number
       adImage: string
@@ -228,12 +230,9 @@ declare namespace Api {
       mediaId: number
       appId: number
       name: string
-      nameAlise?: string
       adSceneId?: number
       adTypeId?: number
       adSizeId?: number
-      sspPayType?: number
-      sspDealRatio?: number
       width?: number
       height?: number
       adImage?: string
@@ -245,12 +244,9 @@ declare namespace Api {
     interface SlotUpdateParams {
       id: number
       name?: string
-      nameAlise?: string
       adSceneId?: number
       adTypeId?: number
       adSizeId?: number
-      sspPayType?: number
-      sspDealRatio?: number
       width?: number
       height?: number
       adImage?: string
@@ -301,6 +297,72 @@ declare namespace Api {
       startDate?: number
       endDate?: number
       month?: string
+    }
+  }
+
+  /** 媒体用户认证类型 */
+  namespace MediaAuth {
+    /** 媒体用户注册参数 */
+    interface RegisterParams {
+      name?: string
+      account: string
+      password: string
+      mediaCompanyName?: string
+      mediaCompanyShort?: string
+      mediaCompanyCode?: string
+      mediaCompanyLicense?: string
+      mediaCompanyAddress?: string
+      mediaOwnerName?: string
+      contactName?: string
+      contactPhone?: string
+      contactEmail?: string
+    }
+
+    /** 媒体用户登录参数 */
+    interface LoginParams {
+      account: string
+      password: string
+    }
+
+    /** 媒体用户注册响应 */
+    interface RegisterResponse {
+      id: number
+      account: string
+      enable: number
+      message: string
+    }
+
+    /** 媒体用户登录响应 */
+    interface LoginResponse {
+      id: number
+      name: string
+      account: string
+      mediaCompanyName: string
+      enable: number
+      token: string
+    }
+  }
+
+  /** DSP广告配置类型 */
+  namespace DspConfig {
+    /** 广告类型响应 */
+    interface AdTypeResponse {
+      id: number
+      name: string
+    }
+
+    /** 广告场景响应 */
+    interface AdSceneResponse {
+      id: number
+      name: string
+      typeId: number
+    }
+
+    /** 广告尺寸响应 */
+    interface AdSizeResponse {
+      id: number
+      size: string
+      typeId: number
     }
   }
 }

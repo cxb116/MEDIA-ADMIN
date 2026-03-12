@@ -14,18 +14,11 @@ public class SlotUpdateRequest {
     @Max(value = 255, message = "广告位名称长度不能超过255")
     private String name;
 
-    @Max(value = 255, message = "内部广告位名称长度不能超过255")
-    private String nameAlise;
-
     private Long adSceneId;
 
     private Long adTypeId;
 
     private Long adSizeId;
-
-    private Integer sspPayType;
-
-    private Integer sspDealRatio;
 
     private Integer width;
 

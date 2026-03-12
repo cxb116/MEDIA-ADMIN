@@ -223,3 +223,32 @@ export function fetchGetDataListByMediaId(mediaId: number) {
     url: `/api/media/data/list/media/${mediaId}`
   })
 }
+
+// ==================== DSP广告配置 API ====================
+
+/**
+ * 获取所有广告类型
+ */
+export function fetchGetAdTypes() {
+  return request.get<Api.DspConfig.AdTypeResponse[]>({
+    url: '/api/dsp/config/ad-types'
+  })
+}
+
+/**
+ * 根据广告类型ID获取场景列表
+ */
+export function fetchGetAdScenes(typeId: number) {
+  return request.get<Api.DspConfig.AdSceneResponse[]>({
+    url: `/api/dsp/config/ad-scenes/${typeId}`
+  })
+}
+
+/**
+ * 根据广告类型ID获取尺寸列表
+ */
+export function fetchGetAdSizes(typeId: number) {
+  return request.get<Api.DspConfig.AdSizeResponse[]>({
+    url: `/api/dsp/config/ad-sizes/${typeId}`
+  })
+}

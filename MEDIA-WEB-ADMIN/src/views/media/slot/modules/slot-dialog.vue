@@ -6,52 +6,80 @@
     align-center
   >
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="100px">
-      <ElRow :gutter="20">
-        <ElCol :span="12">
-          <ElFormItem label="广告位名称" prop="name">
-            <ElInput v-model="formData.name" placeholder="请输入广告位名称" />
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12">
-          <ElFormItem label="别名" prop="nameAlise">
-            <ElInput v-model="formData.nameAlise" placeholder="请输入别名" />
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
-      <ElRow :gutter="20">
-        <ElCol :span="12">
-          <ElFormItem label="广告类型" prop="adTypeId">
-            <ElSelect v-model="formData.adTypeId" placeholder="请选择广告类型">
-              <ElOption label="Banner" :value="1" />
-              <ElOption label="插屏" :value="2" />
-              <ElOption label="开屏" :value="3" />
-              <ElOption label="信息流" :value="4" />
-              <ElOption label="激励视频" :value="5" />
-              <ElOption label="原生" :value="6" />
-            </ElSelect>
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12">
-          <ElFormItem label="结算方式" prop="sspPayType">
-            <ElSelect v-model="formData.sspPayType" placeholder="请选择结算方式">
-              <ElOption label="分成" :value="1" />
-              <ElOption label="RTB" :value="2" />
-            </ElSelect>
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
-      <ElRow :gutter="20">
-        <ElCol :span="12">
-          <ElFormItem label="宽度" prop="width">
-            <ElInputNumber v-model="formData.width" :min="0" style="width: 100%" />
-          </ElFormItem>
-        </ElCol>
-        <ElCol :span="12">
-          <ElFormItem label="高度" prop="height">
-            <ElInputNumber v-model="formData.height" :min="0" style="width: 100%" />
-          </ElFormItem>
-        </ElCol>
-      </ElRow>
+      <ElFormItem label="应用" prop="appId">
+        <ElSelect v-model="formData.appId" placeholder="请选择应用" style="width: 100%" :loading="loadingApps">
+          <ElOption
+            v-for="app in appList"
+            :key="app.id"
+            :label="app.name"
+            :value="app.id"
+          />
+        </ElSelect>
+      </ElFormItem>
+      <ElFormItem label="广告位名称" prop="name">
+        <ElInput v-model="formData.name" placeholder="请输入广告位名称" />
+      </ElFormItem>
+      <ElFormItem label="广告类型" prop="adTypeId">
+        <ElSelect
+          v-model="formData.adTypeId"
+          placeholder="请选择广告类型"
+          style="width: 100%"
+          :loading="loadingAdTypes"
+          @change="handleAdTypeChange"
+        >
+          <ElOption
+            v-for="type in adTypeList"
+            :key="type.id"
+            :label="type.name"
+            :value="type.id"
+          />
+        </ElSelect>
+      </ElFormItem>
+      <ElFormItem label="广告场景" prop="adSceneId">
+        <ElSelect
+          v-model="formData.adSceneId"
+          placeholder="请先选择广告类型"
+          style="width: 100%"
+          :loading="loadingAdScenes"
+          :disabled="!formData.adTypeId"
+        >
+          <ElOption
+            v-for="scene in adSceneList"
+            :key="scene.id"
+            :label="scene.name"
+            :value="scene.id"
+          />
+        </ElSelect>
+      </ElFormItem>
+      <ElFormItem label="广告尺寸" prop="adSizeId">
+        <ElSelect
+          v-model="formData.adSizeId"
+          placeholder="请先选择广告类型"
+          style="width: 100%"
+          :loading="loadingAdSizes"
+          :disabled="!formData.adTypeId"
+        >
+          <ElOption
+            v-for="size in adSizeList"
+            :key="size.id"
+            :label="size.size"
+            :value="size.id"
+          />
+        </ElSelect>
+      </ElFormItem>
+      <ElFormItem label="尺寸" prop="width">
+        <ElRow :gutter="20">
+          <ElCol :span="12">
+            <ElInputNumber v-model="formData.width" :min="0" placeholder="宽度" style="width: 100%" />
+          </ElCol>
+          <ElCol :span="12">
+            <ElInputNumber v-model="formData.height" :min="0" placeholder="高度" style="width: 100%" />
+          </ElCol>
+        </ElRow>
+      </ElFormItem>
+      <ElFormItem label="图片地址" prop="adImage">
+        <ElInput v-model="formData.adImage" placeholder="请输入图片地址" />
+      </ElFormItem>
       <ElFormItem label="交互类型" prop="interactionType">
         <ElCheckboxGroup v-model="interactionTypes">
           <ElCheckbox :value="1">打开网页</ElCheckbox>
@@ -77,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-  import { fetchCreateSlot, fetchUpdateSlot } from '@/api/media-manage'
+  import { fetchCreateSlot, fetchUpdateSlot, fetchGetAppListByMediaId, fetchGetAdTypes, fetchGetAdScenes, fetchGetAdSizes } from '@/api/media-manage'
   import type { FormInstance, FormRules } from 'element-plus'
 
   interface Props {
@@ -103,15 +131,131 @@
   const formRef = ref<FormInstance>()
   const submitting = ref(false)
 
+  // 应用相关
+  const loadingApps = ref(false)
+  const appList = ref<Api.MediaManage.AppListItem[]>([])
+
+  // 广告类型相关
+  const loadingAdTypes = ref(false)
+  const adTypeList = ref<Api.DspConfig.AdTypeResponse[]>([])
+
+  // 广告场景相关
+  const loadingAdScenes = ref(false)
+  const adSceneList = ref<Api.DspConfig.AdSceneResponse[]>([])
+
+  // 广告尺寸相关
+  const loadingAdSizes = ref(false)
+  const adSizeList = ref<Api.DspConfig.AdSizeResponse[]>([])
+
+  // 获取当前登录的媒体用户信息
+  const getCurrentMediaId = (): number | undefined => {
+    try {
+      const mediaUserInfo = localStorage.getItem('media_user_info')
+      if (mediaUserInfo) {
+        const userInfo = JSON.parse(mediaUserInfo)
+        return userInfo.id
+      }
+    } catch (error) {
+      console.error('Failed to get media user info:', error)
+    }
+    return undefined
+  }
+
+  // 加载应用列表
+  const loadAppList = async () => {
+    const mediaId = getCurrentMediaId()
+    if (!mediaId) {
+      ElMessage.warning('未获取到媒体用户信息')
+      return
+    }
+
+    loadingApps.value = true
+    try {
+      const data = await fetchGetAppListByMediaId(mediaId)
+      appList.value = data || []
+    } catch (error) {
+      console.error('Failed to load app list:', error)
+      ElMessage.error('加载应用列表失败')
+    } finally {
+      loadingApps.value = false
+    }
+  }
+
+  // 加载广告类型列表
+  const loadAdTypes = async () => {
+    loadingAdTypes.value = true
+    try {
+      const data = await fetchGetAdTypes()
+      adTypeList.value = data || []
+    } catch (error) {
+      console.error('Failed to load ad types:', error)
+      ElMessage.error('加载广告类型失败')
+    } finally {
+      loadingAdTypes.value = false
+    }
+  }
+
+  // 加载广告场景列表
+  const loadAdScenes = async (typeId: number) => {
+    if (!typeId) {
+      adSceneList.value = []
+      return
+    }
+
+    loadingAdScenes.value = true
+    try {
+      const data = await fetchGetAdScenes(typeId)
+      adSceneList.value = data || []
+    } catch (error) {
+      console.error('Failed to load ad scenes:', error)
+      ElMessage.error('加载广告场景失败')
+    } finally {
+      loadingAdScenes.value = false
+    }
+  }
+
+  // 加载广告尺寸列表
+  const loadAdSizes = async (typeId: number) => {
+    if (!typeId) {
+      adSizeList.value = []
+      return
+    }
+
+    loadingAdSizes.value = true
+    try {
+      const data = await fetchGetAdSizes(typeId)
+      adSizeList.value = data || []
+    } catch (error) {
+      console.error('Failed to load ad sizes:', error)
+      ElMessage.error('加载广告尺寸失败')
+    } finally {
+      loadingAdSizes.value = false
+    }
+  }
+
+  // 广告类型改变时，重新加载场景和尺寸
+  const handleAdTypeChange = (typeId: number) => {
+    formData.adSceneId = undefined
+    formData.adSizeId = undefined
+    if (typeId) {
+      loadAdScenes(typeId)
+      loadAdSizes(typeId)
+    } else {
+      adSceneList.value = []
+      adSizeList.value = []
+    }
+  }
+
   const formData = reactive({
     id: undefined as number | undefined,
+    appId: undefined as number | undefined,
     name: '',
-    nameAlise: '',
     adTypeId: undefined as number | undefined,
-    sspPayType: 1,
-    sspDealRatio: 0.5,
+    adSceneId: undefined as number | undefined,
+    adSizeId: undefined as number | undefined,
     width: 0,
     height: 0,
+    adImage: '',
     interactionType: 0,
     remark: ''
   })
@@ -123,28 +267,36 @@
   })
 
   const rules: FormRules = {
+    appId: [{ required: true, message: '请选择应用', trigger: 'change' }],
     name: [
       { required: true, message: '请输入广告位名称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
     ]
   }
 
-  const initFormData = () => {
+  const initFormData = async () => {
     const isEdit = props.type === 'edit' && props.slotData
     const row = props.slotData
 
     Object.assign(formData, {
       id: isEdit && row ? row.id : undefined,
+      appId: isEdit && row ? row.appId : undefined,
       name: isEdit && row ? row.name || '' : '',
-      nameAlise: isEdit && row ? row.nameAlise || '' : '',
       adTypeId: isEdit && row ? row.adTypeId || undefined : undefined,
-      sspPayType: isEdit && row ? row.sspPayType || 1 : 1,
-      sspDealRatio: isEdit && row ? row.sspDealRatio || 0.5 : 0.5,
+      adSceneId: isEdit && row ? row.adSceneId || undefined : undefined,
+      adSizeId: isEdit && row ? row.adSizeId || undefined : undefined,
       width: isEdit && row ? row.width || 0 : 0,
       height: isEdit && row ? row.height || 0 : 0,
+      adImage: isEdit && row ? row.adImage || '' : '',
       interactionType: isEdit && row ? row.interactionType || 0 : 0,
       remark: isEdit && row ? row.remark || '' : ''
     })
+
+    // 如果是编辑且有广告类型，加载对应的场景和尺寸
+    if (isEdit && row && row.adTypeId) {
+      await loadAdScenes(row.adTypeId)
+      await loadAdSizes(row.adTypeId)
+    }
 
     const types: number[] = []
     let interaction = formData.interactionType
@@ -160,9 +312,11 @@
 
   watch(
     () => [props.visible, props.type, props.slotData],
-    ([visible]) => {
+    async ([visible]) => {
       if (visible) {
-        initFormData()
+        loadAppList()
+        loadAdTypes()
+        await initFormData()
         nextTick(() => {
           formRef.value?.clearValidate()
         })
@@ -178,17 +332,24 @@
       if (valid) {
         submitting.value = true
         try {
+          const mediaId = getCurrentMediaId()
+
+          if (!mediaId) {
+            ElMessage.error('未获取到媒体用户信息，请重新登录')
+            return
+          }
+
           if (dialogType.value === 'add') {
             await fetchCreateSlot({
-              mediaId: 1,
-              appId: 1,
+              mediaId: mediaId,
+              appId: formData.appId!,
               name: formData.name,
-              nameAlise: formData.nameAlise,
               adTypeId: formData.adTypeId,
-              sspPayType: formData.sspPayType,
-              sspDealRatio: formData.sspDealRatio,
+              adSceneId: formData.adSceneId,
+              adSizeId: formData.adSizeId,
               width: formData.width,
               height: formData.height,
+              adImage: formData.adImage,
               interactionType: formData.interactionType,
               remark: formData.remark
             })
@@ -197,12 +358,12 @@
             await fetchUpdateSlot({
               id: formData.id!,
               name: formData.name,
-              nameAlise: formData.nameAlise,
               adTypeId: formData.adTypeId,
-              sspPayType: formData.sspPayType,
-              sspDealRatio: formData.sspDealRatio,
+              adSceneId: formData.adSceneId,
+              adSizeId: formData.adSizeId,
               width: formData.width,
               height: formData.height,
+              adImage: formData.adImage,
               interactionType: formData.interactionType,
               remark: formData.remark
             })

@@ -19,19 +19,11 @@ public class SlotCreateRequest {
     @Size(max = 255, message = "广告位名称长度不能超过255")
     private String name;
 
-    @Size(max = 255, message = "内部广告位名称长度不能超过255")
-    private String nameAlise;
-
     private Long adSceneId;
 
     private Long adTypeId;
 
     private Long adSizeId;
-
-    @NotNull(message = "结算方式不能为空")
-    private Integer sspPayType;
-
-    private Integer sspDealRatio;
 
     private Integer width;
 

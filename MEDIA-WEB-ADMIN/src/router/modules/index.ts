@@ -1,17 +1,15 @@
 import { AppRouteRecord } from '@/types/router'
 import { dashboardRoutes } from './dashboard'
-import { systemRoutes } from './system'
-import { mediaRoutes } from './media'
-import { resultRoutes } from './result'
-import { exceptionRoutes } from './exception'
+import { userCenterRoute } from './system'
+import { mediaAppRoutes, mediaSlotRoutes, mediaDataRoutes } from './media'
 
 /**
  * 导出所有模块化路由
  */
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
-  systemRoutes,
-  mediaRoutes,
-  resultRoutes,
-  exceptionRoutes
+  mediaAppRoutes,
+  mediaSlotRoutes,
+  mediaDataRoutes,
+  userCenterRoute
 ]

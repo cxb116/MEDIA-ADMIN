@@ -23,6 +23,18 @@ public class SspSlotInfoService {
     @Autowired
     private SspSlotInfoRepository sspSlotInfoRepository;
 
+    @Autowired
+    private com.media.admin.repository.SspAppRepository sspAppRepository;
+
+    @Autowired
+    private com.media.admin.repository.DspAdTypeRepository dspAdTypeRepository;
+
+    @Autowired
+    private com.media.admin.repository.DspAdSceneRepository dspAdSceneRepository;
+
+    @Autowired
+    private com.media.admin.repository.DspAdSizeRepository dspAdSizeRepository;
+
     public Result<Map<String, Object>> getPage(SlotPageRequest request) {
         SspSlotInfo probe = new SspSlotInfo();
         if (request.getMediaId() != null) {
@@ -89,9 +101,6 @@ public class SspSlotInfoService {
                     if (request.getName() != null) {
                         slot.setName(request.getName());
                     }
-                    if (request.getNameAlise() != null) {
-                        slot.setNameAlise(request.getNameAlise());
-                    }
                     if (request.getAdSceneId() != null) {
                         slot.setAdSceneId(request.getAdSceneId());
                     }
@@ -100,12 +109,6 @@ public class SspSlotInfoService {
                     }
                     if (request.getAdSizeId() != null) {
                         slot.setAdSizeId(request.getAdSizeId());
-                    }
-                    if (request.getSspPayType() != null) {
-                        slot.setSspPayType(request.getSspPayType());
-                    }
-                    if (request.getSspDealRatio() != null) {
-                        slot.setSspDealRatio(request.getSspDealRatio());
                     }
                     if (request.getWidth() != null) {
                         slot.setWidth(request.getWidth());
@@ -164,18 +167,62 @@ public class SspSlotInfoService {
     }
 
     private SlotPageResponse convertToResponse(SspSlotInfo slot) {
+        // 查询应用信息
+        String appName = "-";
+        Integer appOsType = null;
+        String appOsTypeName = "-";
+
+        if (slot.getAppId() != null) {
+            java.util.Optional<com.media.admin.entity.SspApp> appOpt = sspAppRepository.findById(slot.getAppId());
+            if (appOpt.isPresent()) {
+                com.media.admin.entity.SspApp app = appOpt.get();
+                appName = app.getName();
+                appOsType = app.getOsType();
+                appOsTypeName = getAppOsTypeName(app.getOsType());
+            }
+        }
+
+        // 查询广告类型信息
+        String adTypeName = "-";
+        if (slot.getAdTypeId() != null) {
+            java.util.Optional<com.media.admin.entity.DspAdType> adTypeOpt = dspAdTypeRepository.findById(slot.getAdTypeId());
+            if (adTypeOpt.isPresent()) {
+                adTypeName = adTypeOpt.get().getName();
+            }
+        }
+
+        // 查询广告场景信息
+        String adSceneName = "-";
+        if (slot.getAdSceneId() != null) {
+            java.util.Optional<com.media.admin.entity.DspAdScene> adSceneOpt = dspAdSceneRepository.findById(slot.getAdSceneId());
+            if (adSceneOpt.isPresent()) {
+                adSceneName = adSceneOpt.get().getName();
+            }
+        }
+
+        // 查询广告尺寸信息
+        String adSizeName = "-";
+        if (slot.getAdSizeId() != null) {
+            java.util.Optional<com.media.admin.entity.DspAdSize> adSizeOpt = dspAdSizeRepository.findById(slot.getAdSizeId());
+            if (adSizeOpt.isPresent()) {
+                adSizeName = adSizeOpt.get().getSize();
+            }
+        }
+
         return SlotPageResponse.builder()
                 .id(slot.getId())
                 .mediaId(slot.getMediaId())
                 .appId(slot.getAppId())
+                .appName(appName)
+                .appOsType(appOsType)
+                .appOsTypeName(appOsTypeName)
                 .name(slot.getName())
-                .nameAlise(slot.getNameAlise())
                 .adSceneId(slot.getAdSceneId())
+                .adSceneName(adSceneName)
                 .adTypeId(slot.getAdTypeId())
+                .adTypeName(adTypeName)
                 .adSizeId(slot.getAdSizeId())
-                .sspPayType(slot.getSspPayType())
-                .sspPayTypeName(getSspPayTypeName(slot.getSspPayType()))
-                .sspDealRatio(slot.getSspDealRatio())
+                .adSizeName(adSizeName)
                 .width(slot.getWidth())
                 .height(slot.getHeight())
                 .adImage(slot.getAdImage())
@@ -218,6 +265,15 @@ public class SspSlotInfoService {
             case 0: return "禁用";
             case 2: return "审核中";
             case 3: return "拒绝";
+            default: return "未知";
+        }
+    }
+
+    private String getAppOsTypeName(Integer osType) {
+        if (osType == null) return "-";
+        switch (osType) {
+            case 1: return "Android";
+            case 2: return "iOS";
             default: return "未知";
         }
     }

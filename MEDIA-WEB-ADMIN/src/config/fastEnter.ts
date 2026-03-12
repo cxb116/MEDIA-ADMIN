@@ -11,21 +11,12 @@ const fastEnterConfig: FastEnterConfig = {
   // 应用列表
   applications: [
     {
-      name: '工作台',
-      description: '系统概览与数据统计',
-      icon: 'ri:pie-chart-line',
-      iconColor: '#377dff',
-      enabled: true,
-      order: 1,
-      routeName: 'Console'
-    },
-    {
       name: '官方文档',
       description: '使用指南与开发文档',
       icon: 'ri:bill-line',
       iconColor: '#ffb100',
       enabled: true,
-      order: 2,
+      order: 1,
       link: WEB_LINKS.DOCS
     },
     {
@@ -34,7 +25,7 @@ const fastEnterConfig: FastEnterConfig = {
       icon: 'ri:user-location-line',
       iconColor: '#ff6b6b',
       enabled: true,
-      order: 3,
+      order: 2,
       link: WEB_LINKS.COMMUNITY
     },
     {
@@ -43,7 +34,7 @@ const fastEnterConfig: FastEnterConfig = {
       icon: 'ri:bilibili-line',
       iconColor: '#FB7299',
       enabled: true,
-      order: 4,
+      order: 3,
       link: WEB_LINKS.BILIBILI
     }
   ],

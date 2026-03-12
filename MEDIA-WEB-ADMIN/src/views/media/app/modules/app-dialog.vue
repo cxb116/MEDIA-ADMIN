@@ -67,6 +67,20 @@
   const formRef = ref<FormInstance>()
   const submitting = ref(false)
 
+  // 获取当前登录的媒体用户信息
+  const getCurrentMediaId = (): number | undefined => {
+    try {
+      const mediaUserInfo = localStorage.getItem('media_user_info')
+      if (mediaUserInfo) {
+        const userInfo = JSON.parse(mediaUserInfo)
+        return userInfo.id
+      }
+    } catch (error) {
+      console.error('Failed to get media user info:', error)
+    }
+    return undefined
+  }
+
   const formData = reactive({
     id: undefined as number | undefined,
     name: '',
@@ -120,9 +134,15 @@
       if (valid) {
         submitting.value = true
         try {
+          const mediaId = getCurrentMediaId()
+
+          if (!mediaId) {
+            ElMessage.error('未获取到媒体用户信息，请重新登录')
+            return
+          }
+
           if (dialogType.value === 'add') {
             await fetchCreateApp({
-              mediaId: 1,
               name: formData.name,
               osType: formData.osType,
               accessType: formData.accessType,

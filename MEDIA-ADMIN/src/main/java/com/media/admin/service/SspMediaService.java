@@ -54,7 +54,7 @@ public class SspMediaService {
         sspMedia.setContactName(request.getContactName());
         sspMedia.setContactPhone(request.getContactPhone());
         sspMedia.setContactEmail(request.getContactEmail());
-        sspMedia.setEnable(2); // 默认状态：2审核中
+        sspMedia.setEnable(2); // 默认状态：2审核中，需要管理员审核通过后才能登录
         sspMedia.setRemark(request.getRemark());
         sspMedia.setCreateBy(request.getAccount());
 

@@ -243,31 +243,19 @@
       "title": "Outside"
     },
     "dashboard": {
-      "title": "Dashboard",
-      "console": "Console"
-    },
-    "result": {
-      "title": "Result Page",
-      "success": "Success",
-      "fail": "Fail"
-    },
-    "exception": {
-      "title": "Exception",
-      "forbidden": "403",
-      "notFound": "404",
-      "serverError": "500"
+      "title": "Dashboard"
     },
     "system": {
-      "title": "System Settings",
-      "user": "User Manage",
-      "role": "Role Manage",
-      "userCenter": "User Center",
-      "menu": "Menu Manage"
+      "userCenter": "User Center"
     },
-    "media": {
-      "title": "Media Manage",
-      "app": "App Manage",
-      "slot": "Slot Manage"
+    "mediaApp": {
+      "title": "App Manage"
+    },
+    "mediaSlot": {
+      "title": "Slot Manage"
+    },
+    "mediaData": {
+      "title": "Data Query"
     }
   },
   "table": {

@@ -18,46 +18,59 @@
             label-position="top"
             :key="formKey"
           >
-            <ElFormItem prop="username">
+            <ElFormItem prop="mediaCompanyName" label="公司名称">
               <ElInput
                 class="custom-height"
-                v-model.trim="formData.username"
-                :placeholder="$t('register.placeholder.username')"
+                v-model.trim="formData.mediaCompanyName"
+                placeholder="请输入公司名称"
               />
             </ElFormItem>
 
-            <ElFormItem prop="password">
+            <ElFormItem prop="name" label="媒体名称">
+              <ElInput
+                class="custom-height"
+                v-model.trim="formData.name"
+                placeholder="请输入媒体名称"
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="account" label="账号">
+              <ElInput
+                class="custom-height"
+                v-model.trim="formData.account"
+                placeholder="请输入账号（3-50位字母数字下划线）"
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="password" label="密码">
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.password"
-                :placeholder="$t('register.placeholder.password')"
                 type="password"
                 autocomplete="off"
                 show-password
+                placeholder="请输入密码（6-20位）"
               />
             </ElFormItem>
 
-            <ElFormItem prop="confirmPassword">
+            <ElFormItem prop="confirmPassword" label="确认密码">
               <ElInput
                 class="custom-height"
                 v-model.trim="formData.confirmPassword"
-                :placeholder="$t('register.placeholder.confirmPassword')"
                 type="password"
                 autocomplete="off"
-                @keyup.enter="register"
                 show-password
+                placeholder="请再次输入密码"
+                @keyup.enter="register"
               />
             </ElFormItem>
 
-            <ElFormItem prop="agreement">
-              <ElCheckbox v-model="formData.agreement">
-                {{ $t('register.agreeText') }}
-                <RouterLink
-                  style="color: var(--theme-color); text-decoration: none"
-                  to="/privacy-policy"
-                  >{{ $t('register.privacyPolicy') }}</RouterLink
-                >
-              </ElCheckbox>
+            <ElFormItem prop="contactName" label="联系人">
+              <ElInput
+                class="custom-height"
+                v-model.trim="formData.contactName"
+                placeholder="请输入联系人"
+              />
             </ElFormItem>
 
             <div style="margin-top: 15px">
@@ -88,20 +101,19 @@
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n'
   import type { FormInstance, FormRules } from 'element-plus'
+  import { fetchMediaRegister } from '@/api/mediaAuth'
+  import { ElMessage } from 'element-plus'
 
   defineOptions({ name: 'Register' })
 
   interface RegisterForm {
-    username: string
+    name: string
+    account: string
     password: string
     confirmPassword: string
-    agreement: boolean
+    mediaCompanyName: string
+    contactName: string
   }
-
-  const USERNAME_MIN_LENGTH = 3
-  const USERNAME_MAX_LENGTH = 20
-  const PASSWORD_MIN_LENGTH = 6
-  const REDIRECT_DELAY = 1000
 
   const { t, locale } = useI18n()
   const router = useRouter()
@@ -110,91 +122,75 @@
   const loading = ref(false)
   const formKey = ref(0)
 
-  // 监听语言切换，重置表单
   watch(locale, () => {
     formKey.value++
   })
 
   const formData = reactive<RegisterForm>({
-    username: '',
+    name: '',
+    account: '',
     password: '',
     confirmPassword: '',
-    agreement: false
+    mediaCompanyName: '',
+    contactName: ''
   })
 
-  /**
-   * 验证密码
-   * 当密码输入后，如果确认密码已填写，则触发确认密码的验证
-   */
   const validatePassword = (_rule: any, value: string, callback: (error?: Error) => void) => {
     if (!value) {
-      callback(new Error(t('register.placeholder.password')))
+      callback(new Error('请输入密码'))
       return
     }
-
     if (formData.confirmPassword) {
       formRef.value?.validateField('confirmPassword')
     }
-
     callback()
   }
 
-  /**
-   * 验证确认密码
-   * 检查确认密码是否与密码一致
-   */
   const validateConfirmPassword = (
     _rule: any,
     value: string,
     callback: (error?: Error) => void
   ) => {
     if (!value) {
-      callback(new Error(t('register.rule.confirmPasswordRequired')))
+      callback(new Error('请再次输入密码'))
       return
     }
-
     if (value !== formData.password) {
-      callback(new Error(t('register.rule.passwordMismatch')))
+      callback(new Error('两次输入的密码不一致'))
       return
     }
-
     callback()
   }
 
-  /**
-   * 验证用户协议
-   * 确保用户已勾选同意协议
-   */
-  const validateAgreement = (_rule: any, value: boolean, callback: (error?: Error) => void) => {
+  const validateAccount = (_rule: any, value: string, callback: (error?: Error) => void) => {
     if (!value) {
-      callback(new Error(t('register.rule.agreementRequired')))
+      callback(new Error('请输入账号'))
+      return
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+      callback(new Error('账号只能包含字母、数字和下划线'))
       return
     }
     callback()
   }
 
   const rules = computed<FormRules<RegisterForm>>(() => ({
-    username: [
-      { required: true, message: t('register.placeholder.username'), trigger: 'blur' },
-      {
-        min: USERNAME_MIN_LENGTH,
-        max: USERNAME_MAX_LENGTH,
-        message: t('register.rule.usernameLength'),
-        trigger: 'blur'
-      }
+    name: [
+      { required: true, message: '请输入媒体名称', trigger: 'blur' }
+    ],
+    account: [
+      { required: true, validator: validateAccount, trigger: 'blur' },
+      { min: 3, max: 50, message: '账号长度必须在3-50位之间', trigger: 'blur' }
     ],
     password: [
       { required: true, validator: validatePassword, trigger: 'blur' },
-      { min: PASSWORD_MIN_LENGTH, message: t('register.rule.passwordLength'), trigger: 'blur' }
+      { min: 6, max: 20, message: '密码长度必须在6-20位之间', trigger: 'blur' }
     ],
-    confirmPassword: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }],
-    agreement: [{ validator: validateAgreement, trigger: 'change' }]
+    confirmPassword: [
+      { required: true, validator: validateConfirmPassword, trigger: 'blur' }
+    ]
   }))
 
-  /**
-   * 注册用户
-   * 验证表单后提交注册请求
-   */
   const register = async () => {
     if (!formRef.value) return
 
@@ -202,39 +198,38 @@
       await formRef.value.validate()
       loading.value = true
 
-      // TODO: 替换为真实 API 调用
-      // const params = {
-      //   username: formData.username,
-      //   password: formData.password
-      // }
-      // const res = await AuthService.register(params)
-      // if (res.code === ApiStatus.success) {
-      //   ElMessage.success('注册成功')
-      //   toLogin()
-      // }
+      const params: any = {
+        name: formData.name,
+        account: formData.account,
+        password: formData.password,
+        mediaCompanyName: formData.mediaCompanyName,
+        contactName: formData.contactName
+      }
 
-      // 模拟注册请求
-      setTimeout(() => {
-        loading.value = false
-        ElMessage.success('注册成功')
-        toLogin()
-      }, REDIRECT_DELAY)
-    } catch (error) {
-      console.error('表单验证失败:', error)
+      const data = await fetchMediaRegister(params)
+      ElMessage.success(data?.message || '注册成功，请等待审核')
+      toLogin()
+    } catch (error: any) {
+      console.error('注册失败:', error)
+      ElMessage.error(error?.message || '注册失败，请稍后重试')
+    } finally {
       loading.value = false
     }
   }
 
-  /**
-   * 跳转到登录页面
-   */
   const toLogin = () => {
     setTimeout(() => {
       router.push({ name: 'Login' })
-    }, REDIRECT_DELAY)
+    }, 1500)
   }
 </script>
 
 <style scoped>
   @import '../login/style.css';
+  
+  .auth-right-wrap {
+    height: auto !important;
+    max-height: 90vh;
+    overflow-y: auto !important;
+  }
 </style>

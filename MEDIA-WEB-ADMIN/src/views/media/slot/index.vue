@@ -90,26 +90,76 @@
         { type: 'selection' },
         { type: 'index', width: 60, label: '序号' },
         { prop: 'name', label: '广告位名称', minWidth: 150 },
-        { prop: 'nameAlise', label: '别名', minWidth: 120 },
         {
-          prop: 'sspPayType',
-          label: '结算方式',
-          width: 100,
-          formatter: (row) => row.sspPayTypeName || '-'
+          prop: 'appName',
+          label: '应用名称',
+          width: 120,
+          formatter: (row) => row.appName || '-'
         },
         {
-          prop: 'sspDealRatio',
-          label: '分成比例',
-          width: 100,
-          formatter: (row) => (row.sspDealRatio ? `${(row.sspDealRatio * 100).toFixed(1)}%` : '-')
+          prop: 'appOsTypeName',
+          label: '系统',
+          width: 80,
+          formatter: (row) => {
+            const osType = row.appOsType
+            if (osType === 1) {
+              return h(ElTag, { type: 'success', size: 'small' }, () => 'Android')
+            } else if (osType === 2) {
+              return h(ElTag, { type: 'primary', size: 'small' }, () => 'iOS')
+            }
+            return row.appOsTypeName || '-'
+          }
         },
-        { prop: 'width', label: '宽度', width: 80 },
-        { prop: 'height', label: '高度', width: 80 },
+        {
+          prop: 'adTypeName',
+          label: '广告类型',
+          width: 100,
+          formatter: (row) => row.adTypeName || '-'
+        },
+        {
+          prop: 'adSceneName',
+          label: '广告场景',
+          width: 120,
+          formatter: (row) => row.adSceneName || '-'
+        },
+        {
+          prop: 'adSizeName',
+          label: '广告尺寸',
+          width: 120,
+          formatter: (row) => row.adSizeName || '-'
+        },
+        {
+          prop: 'width',
+          label: '尺寸',
+          width: 120,
+          formatter: (row) => {
+            const w = row.width || 0
+            const h = row.height || 0
+            return w || h ? `${w} × ${h}` : '-'
+          }
+        },
+        {
+          prop: 'adImage',
+          label: '示例图片',
+          width: 150,
+          formatter: (row) => row.adImage || '-'
+        },
         {
           prop: 'interactionType',
           label: '交互类型',
           minWidth: 150,
-          formatter: (row) => row.interactionTypeName || '-'
+          formatter: (row) => {
+            if (!row.interactionType) return '-'
+            const types = []
+            if (row.interactionType & 1) types.push('打开网页')
+            if (row.interactionType & 2) types.push('Deeplink')
+            if (row.interactionType & 4) types.push('直接下载')
+            if (row.interactionType & 8) types.push('广点通')
+            if (row.interactionType & 16) types.push('小程序')
+            if (row.interactionType & 32) types.push('应用商店')
+            if (row.interactionType & 64) types.push('快应用')
+            return types.length > 0 ? types.join('、') : '-'
+          }
         },
         {
           prop: 'enable',

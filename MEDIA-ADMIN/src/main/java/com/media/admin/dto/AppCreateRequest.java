@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @Data
 public class AppCreateRequest {
 
-    @NotNull(message = "媒体ID不能为空")
+    // mediaId 由后端自动从 Token 中获取，无需前端传递
     private Long mediaId;
 
     @NotBlank(message = "应用名称不能为空")
