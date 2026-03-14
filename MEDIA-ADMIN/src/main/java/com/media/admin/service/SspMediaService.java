@@ -4,6 +4,7 @@ import com.media.admin.common.Result;
 import com.media.admin.dto.MediaLoginRequest;
 import com.media.admin.dto.MediaLoginResponse;
 import com.media.admin.dto.MediaRegisterRequest;
+import com.media.admin.dto.MediaUpdateRequest;
 import com.media.admin.entity.SspMedia;
 import com.media.admin.repository.SspMediaRepository;
 import com.media.admin.util.JwtUtil;
@@ -150,5 +151,42 @@ public class SspMediaService {
         data.put("enable", sspMedia.getEnable());
 
         return Result.success(data);
+    }
+
+    /**
+     * 更新媒体用户信息
+     */
+    @Transactional
+    public Result<SspMedia> updateMediaInfo(MediaUpdateRequest request) {
+        Optional<SspMedia> mediaOptional = sspMediaRepository.findById(request.getId());
+        if (!mediaOptional.isPresent()) {
+            return Result.error("用户不存在");
+        }
+
+        SspMedia sspMedia = mediaOptional.get();
+
+        // 更新允许修改的字段
+        if (request.getName() != null) {
+            sspMedia.setName(request.getName());
+        }
+        if (request.getMediaCompanyAddress() != null) {
+            sspMedia.setMediaCompanyAddress(request.getMediaCompanyAddress());
+        }
+        if (request.getContactPhone() != null) {
+            sspMedia.setContactPhone(request.getContactPhone());
+        }
+        if (request.getContactEmail() != null) {
+            sspMedia.setContactEmail(request.getContactEmail());
+        }
+        if (request.getRemark() != null) {
+            sspMedia.setRemark(request.getRemark());
+        }
+
+        // 保存更新
+        SspMedia updatedMedia = sspMediaRepository.save(sspMedia);
+
+        // 清除密码信息后返回
+        updatedMedia.setPassword(null);
+        return Result.success("更新成功", updatedMedia);
     }
 }

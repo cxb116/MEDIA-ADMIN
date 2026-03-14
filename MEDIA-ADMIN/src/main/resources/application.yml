@@ -14,11 +14,13 @@ spring:
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
-      connection-timeout: 60000
-      idle-timeout: 300000
-      max-lifetime: 1800000
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 540000  # 9分钟，小于MySQL默认的wait_timeout(8小时)，避免连接被关闭
       connection-test-query: SELECT 1
       validation-timeout: 5000
+      leak-detection-threshold: 60000  # 检测连接泄漏
+      pool-name: MediaAdminHikariCP
 
   jpa:
     hibernate:

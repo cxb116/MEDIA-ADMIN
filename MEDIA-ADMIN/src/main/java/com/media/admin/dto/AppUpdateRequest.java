@@ -2,8 +2,8 @@ package com.media.admin.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 应用更新请求
@@ -14,21 +14,21 @@ public class AppUpdateRequest {
     @NotNull(message = "应用ID不能为空")
     private Long id;
 
-    @Max(value = 255, message = "应用名称长度不能超过255")
+    @Size(max = 255, message = "应用名称长度不能超过255")
     private String name;
 
     private Integer osType;
 
     private Integer accessType;
 
-    @Max(value = 255, message = "包名长度不能超过255")
+    @Size(max = 500, message = "包名长度不能超过500")
     private String pkg;
 
-    @Max(value = 255, message = "下载地址长度不能超过255")
+    @Size(max = 2000, message = "下载地址长度不能超过2000")
     private String downloadUrl;
 
     private Integer enable;
 
-    @Max(value = 500, message = "备注长度不能超过500")
+    @Size(max = 1000, message = "备注长度不能超过1000")
     private String remark;
 }

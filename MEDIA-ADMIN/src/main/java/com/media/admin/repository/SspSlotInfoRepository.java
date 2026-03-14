@@ -13,6 +13,8 @@ public interface SspSlotInfoRepository extends JpaRepository<SspSlotInfo, Long> 
 
     List<SspSlotInfo> findByAppId(Long appId);
 
+    List<SspSlotInfo> findByAppIdAndMediaId(Long appId, Long mediaId);
+
     List<SspSlotInfo> findByMediaIdAndEnable(Long mediaId, Integer enable);
 
     List<SspSlotInfo> findByAppIdAndEnable(Long appId, Integer enable);

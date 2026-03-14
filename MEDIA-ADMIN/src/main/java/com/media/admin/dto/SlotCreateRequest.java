@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 @Data
 public class SlotCreateRequest {
 
-    @NotNull(message = "媒体ID不能为空")
+    // 媒体ID由后端根据当前登录用户自动设置，无需前端传递
     private Long mediaId;
 
     @NotNull(message = "应用ID不能为空")
@@ -29,11 +29,11 @@ public class SlotCreateRequest {
 
     private Integer height;
 
-    @Size(max = 255, message = "广告位图片长度不能超过255")
+    @Size(max = 2000, message = "广告位图片长度不能超过2000")
     private String adImage;
 
     private Integer interactionType;
 
-    @Size(max = 500, message = "备注长度不能超过500")
+    @Size(max = 1000, message = "备注长度不能超过1000")
     private String remark;
 }

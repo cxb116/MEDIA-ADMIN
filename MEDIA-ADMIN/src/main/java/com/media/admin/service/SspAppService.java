@@ -41,8 +41,12 @@ public class SspAppService {
         if (request.getOsType() != null) {
             probe.setOsType(request.getOsType());
         }
+        // 只有当明确传递了 enable 参数时，才按 enable 过滤
+        // 否则设置为 null，让 ExampleMatcher 忽略该字段
         if (request.getEnable() != null) {
             probe.setEnable(request.getEnable());
+        } else {
+            probe.setEnable(null);
         }
 
         // 创建ExampleMatcher

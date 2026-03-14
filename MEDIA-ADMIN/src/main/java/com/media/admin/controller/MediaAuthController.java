@@ -4,6 +4,7 @@ import com.media.admin.common.Result;
 import com.media.admin.dto.MediaLoginRequest;
 import com.media.admin.dto.MediaLoginResponse;
 import com.media.admin.dto.MediaRegisterRequest;
+import com.media.admin.dto.MediaUpdateRequest;
 import com.media.admin.entity.SspMedia;
 import com.media.admin.service.SspMediaService;
 import com.media.admin.util.JwtUtil;
@@ -75,5 +76,14 @@ public class MediaAuthController {
     @PostMapping("/logout")
     public Result<?> logout() {
         return Result.success("登出成功");
+    }
+
+    /**
+     * 更新媒体用户信息
+     */
+    @PostMapping("/update")
+    public Result<SspMedia> updateMediaInfo(@Validated @RequestBody MediaUpdateRequest request, HttpServletRequest httpRequest) {
+        log.info("更新媒体用户信息: id={}", request.getId());
+        return sspMediaService.updateMediaInfo(request);
     }
 }

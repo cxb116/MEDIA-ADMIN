@@ -6,6 +6,7 @@ import lombok.Data;
 public class SlotPageRequest {
     private Integer current = 1;
     private Integer size = 10;
+    private Long id;
     private Long mediaId;
     private Long appId;
     private String name;

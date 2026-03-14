@@ -37,6 +37,9 @@ public class SspSlotInfoService {
 
     public Result<Map<String, Object>> getPage(SlotPageRequest request) {
         SspSlotInfo probe = new SspSlotInfo();
+        if (request.getId() != null) {
+            probe.setId(request.getId());
+        }
         if (request.getMediaId() != null) {
             probe.setMediaId(request.getMediaId());
         }
@@ -46,8 +49,12 @@ public class SspSlotInfoService {
         if (request.getName() != null && !request.getName().isEmpty()) {
             probe.setName(request.getName());
         }
+        // 只有当明确传递了 enable 参数时，才按 enable 过滤
+        // 否则设置为 null，让 ExampleMatcher 忽略该字段
         if (request.getEnable() != null) {
             probe.setEnable(request.getEnable());
+        } else {
+            probe.setEnable(null);
         }
 
         ExampleMatcher matcher = ExampleMatcher.matching()
@@ -148,6 +155,14 @@ public class SspSlotInfoService {
         List<SspSlotInfo> slots = sspSlotInfoRepository.findAllById(ids);
         sspSlotInfoRepository.deleteAll(slots);
         return Result.success();
+    }
+
+    public Result<List<SlotPageResponse>> listByAppId(Long appId, Long mediaId) {
+        List<SspSlotInfo> slots = sspSlotInfoRepository.findByAppIdAndMediaId(appId, mediaId);
+        List<SlotPageResponse> responses = slots.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return Result.success(responses);
     }
 
     public Result<List<SlotPageResponse>> listByAppId(Long appId) {

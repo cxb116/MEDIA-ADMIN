@@ -25,12 +25,12 @@ public class AppCreateRequest {
     @NotNull(message = "接入方式不能为空")
     private Integer accessType; // 1=API，2=SDK
 
-    @Size(max = 255, message = "包名长度不能超过255")
+    @Size(max = 500, message = "包名长度不能超过500")
     private String pkg;
 
-    @Size(max = 255, message = "下载地址长度不能超过255")
+    @Size(max = 2000, message = "下载地址长度不能超过2000")
     private String downloadUrl;
 
-    @Size(max = 500, message = "备注长度不能超过500")
+    @Size(max = 1000, message = "备注长度不能超过1000")
     private String remark;
 }
