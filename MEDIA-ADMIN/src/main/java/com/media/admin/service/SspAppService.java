@@ -41,14 +41,19 @@ public class SspAppService {
         if (request.getOsType() != null) {
             probe.setOsType(request.getOsType());
         }
-        if (request.getEnable() != null) {
-            probe.setEnable(request.getEnable());
-        }
 
         // 创建ExampleMatcher
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                 .withIgnoreNullValues();
+
+        // 如果传递了enable参数，则添加enable条件
+        if (request.getEnable() != null) {
+            probe.setEnable(request.getEnable());
+        } else {
+            // 如果没有传递enable参数，则忽略enable字段
+            matcher = matcher.withIgnorePaths("enable");
+        }
 
         Example<SspApp> example = Example.of(probe, matcher);
 

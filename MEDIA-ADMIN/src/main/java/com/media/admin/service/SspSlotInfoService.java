@@ -46,8 +46,12 @@ public class SspSlotInfoService {
         if (request.getName() != null && !request.getName().isEmpty()) {
             probe.setName(request.getName());
         }
-        if (request.getEnable() != null) {
+        // 只有明确传递enable参数时才设置enable条件
+        if (request.getEnable() != null && request.getEnable() != 0) {
             probe.setEnable(request.getEnable());
+        } else {
+            // 不传递enable参数时，将enable设置为null以忽略该条件
+            probe.setEnable(null);
         }
 
         ExampleMatcher matcher = ExampleMatcher.matching()
