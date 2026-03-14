@@ -1,9 +1,9 @@
 <template>
   <div class="slot-page art-full-height">
-    <SlotSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams"></SlotSearch>
+    <SlotSearch v-model="searchForm" @search="handleSearch" @reset="customResetSearchParams"></SlotSearch>
 
     <ElCard class="art-table-card" shadow="never">
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="customRefreshData">
         <template #left>
           <ElSpace wrap>
             <ElButton @click="showDialog('add')" v-ripple>新增广告位</ElButton>
@@ -37,7 +37,7 @@
   import { fetchGetSlotList, fetchDeleteSlot } from '@/api/media-manage'
   import SlotSearch from './modules/slot-search.vue'
   import SlotDialog from './modules/slot-dialog.vue'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import { ElTag, ElMessageBox, ElCard, ElSpace, ElButton, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'MediaSlot' })
@@ -49,18 +49,31 @@
   const currentSlotData = ref<Partial<SlotListItem>>({})
   const selectedRows = ref<SlotListItem[]>([])
 
+  // 获取当前登录的媒体用户信息
+  const getCurrentMediaId = (): number | undefined => {
+    try {
+      const mediaUserInfo = localStorage.getItem('media_user_info')
+      if (mediaUserInfo) {
+        const userInfo = JSON.parse(mediaUserInfo)
+        return userInfo.id
+      }
+    } catch (error) {
+      console.error('Failed to get media user info:', error)
+    }
+    return undefined
+  }
+
   const searchForm = ref({
-    mediaId: undefined as number | undefined,
+    mediaId: getCurrentMediaId(),
     appId: undefined as number | undefined,
     name: undefined,
     enable: undefined as number | undefined
   })
 
   const ENABLE_CONFIG = {
-    0: { type: 'danger' as const, text: '禁用' },
-    1: { type: 'success' as const, text: '正常' },
+    1: { type: 'success' as const, text: '启用' },
     2: { type: 'warning' as const, text: '审核中' },
-    3: { type: 'danger' as const, text: '拒绝' }
+    3: { type: 'danger' as const, text: '禁用' }
   } as const
 
   const getEnableConfig = (enable: number) =>
@@ -84,7 +97,8 @@
       apiParams: {
         current: 1,
         size: 20,
-        ...searchForm.value
+        ...searchForm.value,
+        mediaId: getCurrentMediaId()
       },
       columnsFactory: () => [
         { type: 'selection' },
@@ -187,8 +201,23 @@
   })
 
   const handleSearch = (params: Record<string, any>) => {
-    Object.assign(searchParams, params)
+    const mediaId = getCurrentMediaId()
+    Object.assign(searchParams, { mediaId, ...params })
     getData()
+  }
+
+  // 重写 refreshData，确保带上 mediaId
+  const customRefreshData = async () => {
+    const mediaId = getCurrentMediaId()
+    Object.assign(searchParams, { mediaId })
+    await refreshData()
+  }
+
+  // 重写 resetSearchParams，确保带上 mediaId
+  const customResetSearchParams = async () => {
+    await resetSearchParams()
+    const mediaId = getCurrentMediaId()
+    Object.assign(searchParams, { mediaId })
   }
 
   const showDialog = (type: DialogType, row?: SlotListItem): void => {
@@ -207,14 +236,14 @@
     }).then(async () => {
       await fetchDeleteSlot(row.id)
       ElMessage.success('删除成功')
-      refreshData()
+      customRefreshData()
     })
   }
 
   const handleDialogSubmit = async () => {
     dialogVisible.value = false
     currentSlotData.value = {}
-    refreshData()
+    customRefreshData()
   }
 
   const handleSelectionChange = (selection: SlotListItem[]): void => {

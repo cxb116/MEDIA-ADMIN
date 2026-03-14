@@ -7,13 +7,13 @@
   >
     <ElForm ref="formRef" :model="formData" :rules="rules" label-width="100px">
       <ElFormItem label="应用" prop="appId">
-        <ElSelect v-model="formData.appId" placeholder="请选择应用" style="width: 100%" :loading="loadingApps">
-          <ElOption
-            v-for="app in appList"
-            :key="app.id"
-            :label="app.name"
-            :value="app.id"
-          />
+        <ElSelect
+          v-model="formData.appId"
+          placeholder="请选择应用"
+          style="width: 100%"
+          :loading="loadingApps"
+        >
+          <ElOption v-for="app in appList" :key="app.id" :label="app.name" :value="app.id" />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="广告位名称" prop="name">
@@ -27,12 +27,7 @@
           :loading="loadingAdTypes"
           @change="handleAdTypeChange"
         >
-          <ElOption
-            v-for="type in adTypeList"
-            :key="type.id"
-            :label="type.name"
-            :value="type.id"
-          />
+          <ElOption v-for="type in adTypeList" :key="type.id" :label="type.name" :value="type.id" />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="广告场景" prop="adSceneId">
@@ -59,21 +54,26 @@
           :loading="loadingAdSizes"
           :disabled="!formData.adTypeId"
         >
-          <ElOption
-            v-for="size in adSizeList"
-            :key="size.id"
-            :label="size.size"
-            :value="size.id"
-          />
+          <ElOption v-for="size in adSizeList" :key="size.id" :label="size.size" :value="size.id" />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="尺寸" prop="width">
         <ElRow :gutter="20">
           <ElCol :span="12">
-            <ElInputNumber v-model="formData.width" :min="0" placeholder="宽度" style="width: 100%" />
+            <ElInputNumber
+              v-model="formData.width"
+              :min="0"
+              placeholder="宽度"
+              style="width: 100%"
+            />
           </ElCol>
           <ElCol :span="12">
-            <ElInputNumber v-model="formData.height" :min="0" placeholder="高度" style="width: 100%" />
+            <ElInputNumber
+              v-model="formData.height"
+              :min="0"
+              placeholder="高度"
+              style="width: 100%"
+            />
           </ElCol>
         </ElRow>
       </ElFormItem>
@@ -105,7 +105,14 @@
 </template>
 
 <script setup lang="ts">
-  import { fetchCreateSlot, fetchUpdateSlot, fetchGetAppListByMediaId, fetchGetAdTypes, fetchGetAdScenes, fetchGetAdSizes } from '@/api/media-manage'
+  import {
+    fetchCreateSlot,
+    fetchUpdateSlot,
+    fetchGetAppListByMediaId,
+    fetchGetAdTypes,
+    fetchGetAdScenes,
+    fetchGetAdSizes
+  } from '@/api/media-manage'
   import type { FormInstance, FormRules } from 'element-plus'
 
   interface Props {

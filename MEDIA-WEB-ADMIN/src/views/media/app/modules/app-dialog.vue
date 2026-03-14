@@ -10,7 +10,7 @@
         <ElInput v-model="formData.name" placeholder="请输入应用名称" />
       </ElFormItem>
       <ElFormItem label="操作系统" prop="osType">
-        <ElSelect v-model="formData.osType" placeholder="请选择操作系统">
+        <ElSelect v-model="formData.osType" placeholder="请选择操作系统" :disabled="dialogType === 'edit'">
           <ElOption label="Android" :value="1" />
           <ElOption label="iOS" :value="2" />
         </ElSelect>
